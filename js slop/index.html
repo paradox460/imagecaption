@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Caption Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            min-width: 400px;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .text-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        textarea {
+            background: #2a2a2a;
+            border: 1px solid #404040;
+            border-radius: 6px;
+            color: #e0e0e0;
+            padding: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #0066cc;
+        }
+
+        #caption {
+            flex: 2;
+        }
+
+        #tags {
+            flex: 1;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #accept {
+            background: #28a745;
+            color: white;
+        }
+
+        #accept:hover:not(:disabled) {
+            background: #218838;
+        }
+
+        #reject {
+            background: #dc3545;
+            color: white;
+        }
+
+        #reject:hover:not(:disabled) {
+            background: #c82333;
+        }
+
+        #regenerate {
+            background: #ffc107;
+            color: #1a1a1a;
+        }
+
+        #regenerate:hover:not(:disabled) {
+            background: #e0a800;
+        }
+
+        .image-container {
+            max-width: 100%;
+            max-height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: calc(100vh - 80px);
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        .status {
+            padding: 12px;
+            background: #2a2a2a;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #a0a0a0;
+            text-align: center;
+        }
+
+        .status.connected {
+            background: #1e4620;
+            color: #4ade80;
+        }
+
+        .status.error {
+            background: #4a1e1e;
+            color: #f87171;
+        }
+
+        .filename {
+            padding: 8px 12px;
+            background: #2a2a2a;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #a0a0a0;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .spinner {
+            border: 3px solid #404040;
+            border-top: 3px solid #0066cc;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        .spinner-large {
+            width: 60px;
+            height: 60px;
+            border-width: 4px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(26, 26, 26, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            border-radius: 8px;
+            backdrop-filter: blur(4px);
+        }
+
+        .loading-text {
+            color: #a0a0a0;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status.loading {
+            background: #2a3a4a;
+            color: #60a5fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <div class="status" id="status">Connecting...</div>
+            <div class="filename" id="filename">No image loaded</div>
+
+            <div class="text-group" style="flex: 2;">
+                <label for="caption">Caption</label>
+                <textarea id="caption" placeholder="Image description will appear here..."></textarea>
+            </div>
+
+            <div class="text-group" style="flex: 1;">
+                <label for="tags">Tags</label>
+                <textarea id="tags" placeholder="Tags will appear here..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button id="accept" disabled>Accept</button>
+                <button id="reject" disabled>Reject</button>
+                <button id="regenerate" disabled>Regenerate</button>
+            </div>
+        </div>
+
+        <div class="right-panel" style="position: relative;">
+            <div class="image-container" id="imageContainer">
+                <div style="color: #666;">No image loaded</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let ws;
+        let currentImagePath = null;
+
+        const statusEl = document.getElementById('status');
+        const filenameEl = document.getElementById('filename');
+        const captionEl = document.getElementById('caption');
+        const tagsEl = document.getElementById('tags');
+        const imageContainerEl = document.getElementById('imageContainer');
+        const acceptBtn = document.getElementById('accept');
+        const rejectBtn = document.getElementById('reject');
+        const regenerateBtn = document.getElementById('regenerate');
+
+        function connect() {
+            ws = new WebSocket('ws://localhost:8888/ws');
+
+            ws.onopen = () => {
+                statusEl.textContent = 'Connected';
+                statusEl.className = 'status connected';
+                console.log('WebSocket connected');
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleMessage(data);
+                } catch (error) {
+                    console.error('Error parsing message:', error);
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                statusEl.textContent = 'Connection error';
+                statusEl.className = 'status error';
+            };
+
+            ws.onclose = () => {
+                statusEl.textContent = 'Disconnected - Reconnecting...';
+                statusEl.className = 'status';
+                disableButtons();
+                setTimeout(connect, 2000);
+            };
+        }
+
+        function showLoadingSpinner(message = 'Loading...') {
+            const spinner = `
+                <div class="loading-overlay">
+                    <div class="spinner spinner-large"></div>
+                    <div class="loading-text">${message}</div>
+                </div>
+            `;
+            imageContainerEl.parentElement.style.position = 'relative';
+            imageContainerEl.parentElement.insertAdjacentHTML('beforeend', spinner);
+        }
+
+        function hideLoadingSpinner() {
+            const overlay = imageContainerEl.parentElement.querySelector('.loading-overlay');
+            if (overlay) {
+                overlay.remove();
+            }
+        }
+
+        function handleMessage(data) {
+            switch (data.type) {
+                case 'image':
+                    currentImagePath = data.path;
+                    filenameEl.textContent = data.filename || data.path;
+                    imageContainerEl.innerHTML = `<img src="data:${data.mimeType};base64,${data.data}" alt="Current image">`;
+                    captionEl.value = '';
+                    tagsEl.value = '';
+                    disableButtons();
+                    showLoadingSpinner('Generating caption...');
+                    statusEl.textContent = 'Processing image...';
+                    statusEl.className = 'status loading';
+                    break;
+
+                case 'caption':
+                    hideLoadingSpinner();
+                    captionEl.value = data.description || '';
+                    tagsEl.value = Array.isArray(data.tags) ? data.tags.join(', ') : data.tags || '';
+                    enableButtons();
+                    statusEl.textContent = 'Ready';
+                    statusEl.className = 'status connected';
+                    break;
+
+                case 'error':
+                    hideLoadingSpinner();
+                    statusEl.textContent = `Error: ${data.message}`;
+                    statusEl.className = 'status error';
+                    enableButtons();
+                    break;
+
+                case 'complete':
+                    hideLoadingSpinner();
+                    statusEl.textContent = 'All images processed';
+                    statusEl.className = 'status';
+                    disableButtons();
+                    break;
+            }
+        }
+
+        function enableButtons() {
+            acceptBtn.disabled = false;
+            rejectBtn.disabled = false;
+            regenerateBtn.disabled = false;
+        }
+
+        function disableButtons() {
+            acceptBtn.disabled = true;
+            rejectBtn.disabled = true;
+            regenerateBtn.disabled = true;
+        }
+
+        function sendMessage(type, data = {}) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type, ...data }));
+            }
+        }
+
+        acceptBtn.addEventListener('click', () => {
+            sendMessage('accept', {
+                path: currentImagePath,
+                caption: captionEl.value,
+                tags: tagsEl.value
+            });
+            disableButtons();
+            showLoadingSpinner('Loading next image...');
+            statusEl.textContent = 'Loading next image...';
+            statusEl.className = 'status loading';
+        });
+
+        rejectBtn.addEventListener('click', () => {
+            sendMessage('reject', {
+                path: currentImagePath
+            });
+            disableButtons();
+            showLoadingSpinner('Loading next image...');
+            statusEl.textContent = 'Loading next image...';
+            statusEl.className = 'status loading';
+        });
+
+        regenerateBtn.addEventListener('click', () => {
+            sendMessage('regenerate', {
+                path: currentImagePath
+            });
+            disableButtons();
+            showLoadingSpinner('Regenerating caption...');
+            statusEl.textContent = 'Regenerating...';
+            statusEl.className = 'status loading';
+        });
+
+        // Connect on page load
+        connect();
+    </script>
+</body>
+</html>
