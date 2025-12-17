@@ -23,6 +23,18 @@ end
 config :imagecaption, ImagecaptionWeb.Endpoint,
   http: [port: String.to_integer(System.get_env("PORT", "4000"))]
 
+config :imagecaption, :llm,
+  base_url: System.get_env("LLM_BASE_URL") || "http://localhost:8088",
+  model: System.get_env("LLM_MODEL") || "Llama-Joycaption-Beta-One-Hf-Llava-Q4_K",
+  max_tokens: String.to_integer(System.get_env("LLM_MAX_TOKENS") || "300"),
+  temperature: String.to_float(System.get_env("LLM_TEMPERATURE") || "0.7"),
+  description_prompt:
+    System.get_env("LLM_DESCRIPTION_PROMPT") ||
+      "Provide a concise and informative description of the image.",
+  tags_prompt:
+    System.get_env("LLM_TAGS_PROMPT") ||
+      "List relevant keywords or tags that describe the content of the image, separated by commas."
+
 if config_env() == :prod do
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you

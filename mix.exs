@@ -40,6 +40,8 @@ defmodule Imagecaption.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:ecto, "~> 3.13.5"},
+      {:phoenix_ecto, "~> 4.7.0"},
       {:phoenix, "~> 1.8.3"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
@@ -47,7 +49,6 @@ defmodule Imagecaption.MixProject do
       {:lazy_html, ">= 0.1.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.3", runtime: Mix.env() == :dev},
       {:heroicons,
        github: "tailwindlabs/heroicons",
        tag: "v2.2.0",
@@ -60,7 +61,8 @@ defmodule Imagecaption.MixProject do
       {:gettext, "~> 1.0"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+      {:req, "~> 0.5.0"}
     ]
   end
 
@@ -76,7 +78,6 @@ defmodule Imagecaption.MixProject do
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["compile", "tailwind imagecaption", "esbuild imagecaption"],
       "assets.deploy": [
-        "tailwind imagecaption --minify",
         "esbuild imagecaption --minify",
         "phx.digest"
       ],

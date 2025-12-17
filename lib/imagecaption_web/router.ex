@@ -17,7 +17,7 @@ defmodule ImagecaptionWeb.Router do
   scope "/", ImagecaptionWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    live "/", CaptionLive
   end
 
   # Other scopes may use custom stacks.

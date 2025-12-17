@@ -15,8 +15,7 @@ config :imagecaption, ImagecaptionWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "g5BfAv2bCQiEyMbPkVScSANnkpxFbTyQkEXdr9sr1F0YC8HAFu+2G64/4TqPyS9k",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:imagecaption, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:imagecaption, ~w(--watch)]}
+    esbuild: {Esbuild, :install_and_run, [:imagecaption, ~w(--sourcemap=inline --watch)]}
   ]
 
 # ## SSL Support

@@ -254,14 +254,14 @@ defmodule ImagecaptionWeb.CoreComponents do
 
   def input(%{type: "textarea"} = assigns) do
     ~H"""
-    <div class="fieldset mb-2">
+    <div class="fieldset" id={"#{@id}-container"}>
       <label>
-        <span :if={@label} class="label mb-1">{@label}</span>
+        <span :if={@label} class="label">{@label}</span>
         <textarea
           id={@id}
           name={@name}
           class={[
-            @class || "w-full textarea",
+            @class || "textarea",
             @errors != [] && (@error_class || "textarea-error")
           ]}
           {@rest}
@@ -275,7 +275,7 @@ defmodule ImagecaptionWeb.CoreComponents do
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
     ~H"""
-    <div class="fieldset mb-2">
+    <div class="fieldset" id={"#{@id}-container"}>
       <label>
         <span :if={@label} class="label mb-1">{@label}</span>
         <input
