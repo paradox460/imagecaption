@@ -25,7 +25,17 @@ defmodule ImagecaptionWeb.CaptionLive do
         <.form for={@form} phx-submit="accept" class="left-panel">
           <div class="status">
             <%= if @current_index && @total_images do %>
-              Processing: {@current_index} / {@total_images}
+              Processing:
+              <input
+                type="number"
+                value={@current_index}
+                min="1"
+                max={@total_images}
+                phx-change="jump_to_index"
+                name="index"
+                class="jump-to-index"
+                phx-debounce="blur"
+              /> / {@total_images}
               <%= if @caption_source do %>
                 | Source: {format_caption_source(@caption_source)}
               <% end %>
@@ -184,6 +194,19 @@ defmodule ImagecaptionWeb.CaptionLive do
       end
     else
       {:noreply, assign(socket, status: "No image to regenerate")}
+    end
+  end
+
+  def handle_event("jump_to_index", %{"index" => index_str}, socket) do
+    case Integer.parse(index_str) do
+      {index, _} when index >= 1 and index <= socket.assigns.total_images ->
+        # Set the index (subtract 1 because we store 0-based internally but display 1-based)
+        socket = assign(socket, current_index: index - 1)
+        send(self(), :process_next_image)
+        {:noreply, socket}
+
+      _ ->
+        {:noreply, socket}
     end
   end
 
@@ -353,6 +376,7 @@ defmodule ImagecaptionWeb.CaptionLive do
           output
           |> String.trim()
           |> String.split("\n", trim: true)
+          |> Enum.sort()
 
         {:search_complete, files}
 

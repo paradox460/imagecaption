@@ -28,48 +28,50 @@
       gap: 10px;
       align-items: center;
     }
-
-    textarea, input[type="text"] {
-      background: var(--base01);
-      border: 1px solid var(--base03);
-      border-radius: 6px;
-      color: var(--base07);
-      padding: 12px;
-      font-size: 14px;
-      resize: none;
-      transition: border-color 0.2s ease-in-out;
-    }
-
-    textarea {
-      min-height: 120px;
-    }
   }
 }
 
+textarea,
+input[type="text"],
+input[type="number"] {
+  background: var(--base01);
+  border: 1px solid var(--base03);
+  border-radius: 6px;
+  color: var(--base07);
+  padding: 12px;
+  font-size: 14px;
+  resize: none;
+  transition: border-color 0.2s ease-in-out;
+}
+
+textarea {
+  min-height: 120px;
+}
+
 button {
-    flex: 1;
-    padding: 14px 24px;
-    border: none;
-    border-radius: 6px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  flex: 1;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 
-    &:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
 
-    &:active {
-        transform: translateY(0);
-    }
+  &:active {
+    transform: translateY(0);
+  }
 
-    &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: none;
-    }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
 }
