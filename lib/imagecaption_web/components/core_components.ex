@@ -159,6 +159,7 @@ defmodule ImagecaptionWeb.CoreComponents do
   attr :id, :any, default: nil
   attr :name, :any
   attr :label, :string, default: nil
+  attr :sublabel, :string, default: nil
   attr :value, :any
 
   attr :type, :string,
@@ -256,7 +257,14 @@ defmodule ImagecaptionWeb.CoreComponents do
     ~H"""
     <div class="fieldset" id={"#{@id}-container"}>
       <label>
-        <span :if={@label} class="label">{@label}</span>
+        <%= if @label && @sublabel do %>
+          <div class="complex-label">
+            <div class="label">{@label}</div>
+            <div class="sublabel">{@sublabel}</div>
+          </div>
+        <% else %>
+          <span :if={@label} class="label">{@label}</span>
+        <% end %>
         <textarea
           id={@id}
           name={@name}

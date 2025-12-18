@@ -35,10 +35,12 @@ defmodule ImagecaptionWeb.CaptionLive do
           </div>
           <div class="filename">Filename: {@form[:filename].value}</div>
           <.input type="textarea" field={@form[:description]} label="Description" />
-          <.input type="textarea" field={@form[:tags_string]} label="Tags" />
+          <.input type="textarea" field={@form[:tags_string]} label="Tags" sublabel="One per line" />
           <div class="actions">
-            <.button type="submit" phx-disable-with="Accepting…" class="accept">Accept</.button>
-            <.button type="button" phx-click="reject" class="reject">Reject</.button>
+            <.button type="submit" phx-disable-with="Accepting…" class="accept">
+              Accept/Write
+            </.button>
+            <.button type="button" phx-click="reject" class="reject">Reject/Skip</.button>
             <.button type="button" phx-click="regen" class="regen">Regenerate</.button>
           </div>
         </.form>
