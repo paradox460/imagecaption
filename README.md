@@ -1,5 +1,7 @@
 # Imagecaption
 
+![Screenshot of the User interface](screenshot.png)
+
 A Phoenix LiveView application for batch processing JPEG images with AI-generated descriptions and keywords. The application provides a web interface for reviewing, editing, and writing EXIF metadata to image files.
 
 ## Architecture
