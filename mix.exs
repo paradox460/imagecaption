@@ -74,9 +74,9 @@ defmodule Imagecaption.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "assets.setup", "assets.build"],
-      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["compile", "tailwind imagecaption", "esbuild imagecaption"],
+      setup: ["check_deps", "deps.get", "assets.setup", "assets.build"],
+      "assets.setup": ["esbuild.install --if-missing"],
+      "assets.build": ["compile", "esbuild imagecaption"],
       "assets.deploy": [
         "esbuild imagecaption --minify",
         "phx.digest"
