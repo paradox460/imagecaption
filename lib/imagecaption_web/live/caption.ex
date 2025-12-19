@@ -357,34 +357,40 @@ defmodule ImagecaptionWeb.CaptionLive do
   end
 
   defp find_jpeg_images(path) do
-    case System.cmd("fd", [
-           "-e",
-           "jpg",
-           "-e",
-           "jpeg",
-           "-e",
-           "JPG",
-           "-e",
-           "JPEG",
-           "-t",
-           "f",
-           ".",
-           path
-         ]) do
-      {output, 0} ->
-        files =
-          output
-          |> String.trim()
-          |> String.split("\n", trim: true)
-          |> Enum.sort()
+    if path =~ ~r/\.jpe?g$/i do
+      {:search_complete, [path]}
+    else
+      try do
+        case System.cmd("fd", [
+               "-e",
+               "jpg",
+               "-e",
+               "jpeg",
+               "-e",
+               "JPG",
+               "-e",
+               "JPEG",
+               "-t",
+               "f",
+               ".",
+               path
+             ]) do
+          {output, 0} ->
+            files =
+              output
+              |> String.trim()
+              |> String.split("\n", trim: true)
+              |> Enum.sort()
 
-        {:search_complete, files}
+            {:search_complete, files}
 
-      {error, _} ->
-        {:search_error, "Failed to search directory: #{error}"}
+          {error, _} ->
+            {:search_error, "Failed to search directory: #{error}"}
+        end
+      rescue
+        e ->
+          {:search_error, "Failed to run fd command: #{Exception.message(e)}"}
+      end
     end
-  rescue
-    e ->
-      {:search_error, "Failed to run fd command: #{Exception.message(e)}"}
   end
 end
